@@ -48,202 +48,182 @@
  * @author Jerald Paul Abraham <jeraldabraham@email.arizona.edu>
  */
 
-#include "core/version.hpp"
-
-#include <sstream>
+#include "ndn-poke.hpp"
 
 namespace ndn {
 namespace peek {
 
-class NdnPoke : boost::noncopyable
+NdnPoke::NdnPoke(char* programName)
+  : m_programName(programName)
+  , m_isForceDataSet(false)
+  , m_isUseDigestSha256Set(false)
+  , m_isLastAsFinalBlockIdSet(false)
+  , m_freshnessPeriod(-1)
+  , m_timeout(-1)
+  , m_isDataSent(false)
 {
-public:
-  explicit
-  NdnPoke(char* programName)
-    : m_programName(programName)
-    , m_isForceDataSet(false)
-    , m_isUseDigestSha256Set(false)
-    , m_isLastAsFinalBlockIdSet(false)
-    , m_freshnessPeriod(-1)
-    , m_timeout(-1)
-    , m_isDataSent(false)
-  {
-  }
+}
 
-  void
-  usage()
-  {
-    std::cout << "\n Usage:\n " << m_programName << " "
-      "[-f] [-D] [-i identity] [-F] [-x freshness] [-w timeout] ndn:/name\n"
-      "   Reads payload from stdin and sends it to local NDN forwarder as a "
-      "single Data packet\n"
-      "   [-f]          - force, send Data without waiting for Interest\n"
-      "   [-D]          - use DigestSha256 signing method instead of "
-      "SignatureSha256WithRsa\n"
-      "   [-i identity] - set identity to be used for signing\n"
-      "   [-F]          - set FinalBlockId to the last component of Name\n"
-      "   [-x]          - set FreshnessPeriod in time::milliseconds\n"
-      "   [-w timeout]  - set Timeout in time::milliseconds\n"
-      "   [-h]          - print help and exit\n"
-      "   [-V]          - print version and exit\n"
-      "\n";
-    exit(1);
-  }
+void
+NdnPoke::usage()
+{
+  std::cout << "\n Usage:\n " << m_programName << " "
+    "[-f] [-D] [-i identity] [-F] [-x freshness] [-w timeout] ndn:/name\n"
+    "   Reads payload from stdin and sends it to local NDN forwarder as a "
+    "single Data packet\n"
+    "   [-f]          - force, send Data without waiting for Interest\n"
+    "   [-D]          - use DigestSha256 signing method instead of "
+    "SignatureSha256WithRsa\n"
+    "   [-i identity] - set identity to be used for signing\n"
+    "   [-F]          - set FinalBlockId to the last component of Name\n"
+    "   [-x]          - set FreshnessPeriod in time::milliseconds\n"
+    "   [-w timeout]  - set Timeout in time::milliseconds\n"
+    "   [-h]          - print help and exit\n"
+    "   [-V]          - print version and exit\n"
+    "\n";
+  exit(1);
+}
 
-  void
-  setForceData()
-  {
-    m_isForceDataSet = true;
-  }
+void
+NdnPoke::setForceData()
+{
+  m_isForceDataSet = true;
+}
 
-  void
-  setUseDigestSha256()
-  {
-    m_isUseDigestSha256Set = true;
-  }
+void
+NdnPoke::setUseDigestSha256()
+{
+  m_isUseDigestSha256Set = true;
+}
 
-  void
-  setIdentityName(char* identityName)
-  {
-    m_identityName = make_shared<Name>(identityName);
-  }
+void
+NdnPoke::setIdentityName(char* identityName)
+{
+  m_identityName = make_shared<Name>(identityName);
+}
 
-  void
-  setLastAsFinalBlockId()
-  {
-    m_isLastAsFinalBlockIdSet = true;
-  }
+void
+NdnPoke::setLastAsFinalBlockId()
+{
+  m_isLastAsFinalBlockIdSet = true;
+}
 
-  void
-  setFreshnessPeriod(int freshnessPeriod)
-  {
-    if (freshnessPeriod < 0)
-      usage();
+void
+NdnPoke::setFreshnessPeriod(int freshnessPeriod)
+{
+  if (freshnessPeriod < 0)
+    usage();
 
-    m_freshnessPeriod = time::milliseconds(freshnessPeriod);
-  }
+  m_freshnessPeriod = time::milliseconds(freshnessPeriod);
+}
 
-  void
-  setTimeout(int timeout)
-  {
-    if (timeout < 0)
-      usage();
+void
+NdnPoke::setTimeout(int timeout)
+{
+  if (timeout < 0)
+    usage();
 
-    m_timeout = time::milliseconds(timeout);
-  }
+  m_timeout = time::milliseconds(timeout);
+}
 
-  void
-  setPrefixName(char* prefixName)
-  {
-    m_prefixName = Name(prefixName);
-  }
+void
+NdnPoke::setPrefixName(char* prefixName)
+{
+  m_prefixName = Name(prefixName);
+}
 
-  time::milliseconds
-  getDefaultTimeout()
-  {
-    return time::seconds(10);
-  }
+time::milliseconds
+NdnPoke::getDefaultTimeout()
+{
+  return time::seconds(10);
+}
 
-  shared_ptr<Data>
-  createDataPacket()
-  {
-    auto dataPacket = make_shared<Data>(m_prefixName);
+shared_ptr<Data>
+NdnPoke::createDataPacket()
+{
+  auto dataPacket = make_shared<Data>(m_prefixName);
 
-    std::stringstream payloadStream;
-    payloadStream << std::cin.rdbuf();
-    std::string payload = payloadStream.str();
-    dataPacket->setContent(reinterpret_cast<const uint8_t*>(payload.c_str()), payload.length());
+  std::stringstream payloadStream;
+  payloadStream << std::cin.rdbuf();
+  std::string payload = payloadStream.str();
+  dataPacket->setContent(reinterpret_cast<const uint8_t*>(payload.c_str()), payload.length());
 
-    if (m_freshnessPeriod >= time::milliseconds::zero())
-      dataPacket->setFreshnessPeriod(m_freshnessPeriod);
+  if (m_freshnessPeriod >= time::milliseconds::zero())
+    dataPacket->setFreshnessPeriod(m_freshnessPeriod);
 
-    if (m_isLastAsFinalBlockIdSet) {
-      if (!m_prefixName.empty())
-        dataPacket->setFinalBlockId(m_prefixName.get(-1));
-      else {
-        std::cerr << "Name Provided Has 0 Components" << std::endl;
-        exit(1);
-      }
-    }
-
-    if (m_isUseDigestSha256Set) {
-      m_keyChain.sign(*dataPacket, signingWithSha256());
-    }
+  if (m_isLastAsFinalBlockIdSet) {
+    if (!m_prefixName.empty())
+      dataPacket->setFinalBlockId(m_prefixName.get(-1));
     else {
-      if (m_identityName == nullptr) {
-        m_keyChain.sign(*dataPacket);
-      }
-      else {
-        m_keyChain.sign(*dataPacket, signingByIdentity(*m_identityName));
-      }
-    }
-
-    return dataPacket;
-  }
-
-  void
-  onInterest(const Name& name,
-             const Interest& interest,
-             shared_ptr<Data> dataPacket)
-  {
-    m_face.put(*dataPacket);
-    m_isDataSent = true;
-    m_face.shutdown();
-  }
-
-  void
-  onRegisterFailed(const Name& prefix, const std::string& reason)
-  {
-    std::cerr << "Prefix Registration Failure." << std::endl;
-    std::cerr << "Reason = " << reason << std::endl;
-  }
-
-  void
-  run()
-  {
-    try {
-      shared_ptr<Data> dataPacket = createDataPacket();
-      if (m_isForceDataSet) {
-        m_face.put(*dataPacket);
-        m_isDataSent = true;
-      }
-      else {
-        m_face.setInterestFilter(m_prefixName,
-                                 bind(&NdnPoke::onInterest, this, _1, _2, dataPacket),
-                                 RegisterPrefixSuccessCallback(),
-                                 bind(&NdnPoke::onRegisterFailed, this, _1, _2));
-      }
-
-      if (m_timeout < time::milliseconds::zero())
-        m_face.processEvents(getDefaultTimeout());
-      else
-        m_face.processEvents(m_timeout);
-    }
-    catch (const std::exception& e) {
-      std::cerr << "ERROR: " << e.what() << "\n" << std::endl;
+      std::cerr << "Name Provided Has 0 Components" << std::endl;
       exit(1);
     }
   }
 
-  bool
-  isDataSent() const
-  {
-    return m_isDataSent;
+  if (m_isUseDigestSha256Set) {
+    m_keyChain.sign(*dataPacket, signingWithSha256());
+  }
+  else {
+    if (m_identityName == nullptr) {
+      m_keyChain.sign(*dataPacket);
+    }
+    else {
+      m_keyChain.sign(*dataPacket, signingByIdentity(*m_identityName));
+    }
   }
 
-private:
-  KeyChain m_keyChain;
-  std::string m_programName;
-  bool m_isForceDataSet;
-  bool m_isUseDigestSha256Set;
-  shared_ptr<Name> m_identityName;
-  bool m_isLastAsFinalBlockIdSet;
-  time::milliseconds m_freshnessPeriod;
-  time::milliseconds m_timeout;
-  Name m_prefixName;
-  bool m_isDataSent;
-  Face m_face;
-};
+  return dataPacket;
+}
+
+void
+NdnPoke::onInterest(const Name& name,
+           const Interest& interest,
+           shared_ptr<Data> dataPacket)
+{
+  m_face.put(*dataPacket);
+  m_isDataSent = true;
+  m_face.shutdown();
+}
+
+void
+NdnPoke::onRegisterFailed(const Name& prefix, const std::string& reason)
+{
+  std::cerr << "Prefix Registration Failure." << std::endl;
+  std::cerr << "Reason = " << reason << std::endl;
+}
+
+void
+NdnPoke::run()
+{
+  try {
+    shared_ptr<Data> dataPacket = createDataPacket();
+    if (m_isForceDataSet) {
+      m_face.put(*dataPacket);
+      m_isDataSent = true;
+    }
+    else {
+      m_face.setInterestFilter(m_prefixName,
+                               bind(&NdnPoke::onInterest, this, _1, _2, dataPacket),
+                               RegisterPrefixSuccessCallback(),
+                               bind(&NdnPoke::onRegisterFailed, this, _1, _2));
+    }
+
+    if (m_timeout < time::milliseconds::zero())
+      m_face.processEvents(getDefaultTimeout());
+    else
+      m_face.processEvents(m_timeout);
+  }
+  catch (const std::exception& e) {
+    std::cerr << "ERROR: " << e.what() << "\n" << std::endl;
+    exit(1);
+  }
+}
+
+bool
+NdnPoke::isDataSent() const
+{
+  return m_isDataSent;
+}
 
 int
 main(int argc, char* argv[])

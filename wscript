@@ -10,22 +10,23 @@ import os
 def options(opt):
     opt.load(['compiler_cxx', 'gnu_dirs'])
     opt.load(['default-compiler-flags', 'coverage', 'sanitizers', 'boost',
-              'sphinx_build'],
+              'sphinx_build', 'cryptopp'],
              tooldir=['.waf-tools'])
 
     opt.add_option('--with-tests', action='store_true', default=False,
                    dest='with_tests', help='''Build unit tests''')
 
-    opt.recurse('tools')
 
 def configure(conf):
     conf.load(['compiler_cxx', 'gnu_dirs',
-               'default-compiler-flags', 'sphinx_build', 'boost'])
+               'default-compiler-flags', 'sphinx_build', 'boost', 'cryptopp'])
 
     if 'PKG_CONFIG_PATH' not in os.environ:
         os.environ['PKG_CONFIG_PATH'] = Utils.subst_vars('${LIBDIR}/pkgconfig', conf.env)
     conf.check_cfg(package='libndn-cxx', args=['--cflags', '--libs'],
                    uselib_store='NDN_CXX', mandatory=True)
+
+    conf.check_cryptopp()
 
     boost_libs = 'system iostreams regex'
     if conf.options.with_tests:
@@ -34,7 +35,6 @@ def configure(conf):
         boost_libs += ' unit_test_framework'
     conf.check_boost(lib=boost_libs)
 
-    conf.recurse('tools')
 
     conf.check_compiler_flags()
 
@@ -59,7 +59,24 @@ def build(bld):
         includes='.',
         export_includes='.')
 
-    bld.recurse('tools')
+    bld(features='cxx',
+        name='peek-ndnpeek-objects',
+        source=bld.path.ant_glob('src/ndnpeek/*.cpp', excl='src/ndnpeek/main.cpp'),
+        use='core-objects')
+
+    bld(features='cxx cxxprogram',
+        target='bin/ndnpeek',
+        source='src/ndnpeek/main.cpp',
+        use='peek-ndnpeek-objects')
+
+    bld.program(features='cxx',
+        target='bin/ndnpoke',
+        source='src/ndn-poke.cpp',
+        use='core-objects')
+
+    bld(name='peek-objects',
+        use='peek-ndnpeek-objects')
+
     bld.recurse('tests')
     bld.recurse('manpages')
 

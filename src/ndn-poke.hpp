@@ -5,6 +5,12 @@
 
 #include <sstream>
 
+#include <cryptopp/osrng.h>
+#include <cryptopp/rsa.h>
+#include <cryptopp/filters.h>
+#include <cryptopp/files.h>
+
+using namespace CryptoPP;
 namespace ndn {
 namespace peek {
 
@@ -58,6 +64,15 @@ public:
   bool
   isDataSent() const;
 
+  void
+  saveKey(const std::string &filename, const CryptoMaterial &key);
+
+  std::string
+  encrypt(const std::string &payload);
+
+  std::string
+  decrypt(const std::string &cipher);
+
 private:
   KeyChain m_keyChain;
   std::string m_programName;
@@ -70,6 +85,10 @@ private:
   Name m_prefixName;
   bool m_isDataSent;
   Face m_face;
+
+
+  RSA::PrivateKey *privateKey;
+  RSA::PublicKey * publicKey;
 };
 } // namespace peek
 } // namespace ndn

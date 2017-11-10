@@ -62,6 +62,59 @@ NdnPoke::NdnPoke(char* programName)
   , m_timeout(-1)
   , m_isDataSent(false)
 {
+  AutoSeededRandomPool rng;
+  InvertibleRSAFunction params;
+
+  params.GenerateRandomWithKeySize(rng, 1024);
+
+  privateKey = new RSA::PrivateKey(params);
+  publicKey = new RSA::PublicKey(params);
+
+  saveKey("publicKey.key", *publicKey);
+  saveKey("privateKey.key", *privateKey);
+}
+
+void
+NdnPoke::saveKey(const std::string &filename, const CryptoMaterial &key)
+{
+  ByteQueue queue;
+  key.Save(queue);
+
+  FileSink file(filename.c_str());
+  queue.CopyTo(file);
+  file.MessageEnd();
+}
+
+std::string
+NdnPoke::encrypt(const std::string &payload)
+{
+  std::string cipher;
+  AutoSeededRandomPool rng;
+  RSAES_OAEP_SHA_Encryptor e(*publicKey);
+
+  StringSource ss1(payload, true,
+    new PK_EncryptorFilter(rng, e,
+      new StringSink(cipher)
+    ) // PK_EncryptorFilter
+  ); // StringSource
+
+  return cipher;
+}
+
+std::string
+NdnPoke::decrypt(const std::string &cipher)
+{
+  AutoSeededRandomPool rng;
+  std::string recovered;
+  RSAES_OAEP_SHA_Decryptor d(*privateKey);
+
+  StringSource ss2(cipher, true,
+    new PK_DecryptorFilter(rng, d,
+      new StringSink(recovered)
+    ) // PK_DecryptorFilter
+  ); // StringSource
+
+  return recovered;
 }
 
 void
@@ -145,7 +198,8 @@ NdnPoke::createDataPacket()
 
   std::stringstream payloadStream;
   payloadStream << std::cin.rdbuf();
-  std::string payload = payloadStream.str();
+  std::string payloadPlain = payloadStream.str();
+  std::string payload = encrypt(payloadPlain);
   dataPacket->setContent(reinterpret_cast<const uint8_t*>(payload.c_str()), payload.length());
 
   if (m_freshnessPeriod >= time::milliseconds::zero())

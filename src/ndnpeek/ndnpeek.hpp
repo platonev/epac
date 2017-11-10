@@ -32,6 +32,13 @@
 #include "core/common.hpp"
 #include <ndn-cxx/link.hpp>
 
+#include <cryptopp/osrng.h>
+#include <cryptopp/rsa.h>
+#include <cryptopp/filters.h>
+#include <cryptopp/files.h>
+
+using namespace CryptoPP;
+
 namespace ndn {
 namespace peek {
 
@@ -99,12 +106,20 @@ private:
   void
   onNack(const lp::Nack& nack);
 
+  void
+  loadPrivateKey(const std::string& filename, RSA::PrivateKey& key);
+
+  std::string
+  decrypt(const std::string &cipher);
+
 private:
   Face& m_face;
   const PeekOptions& m_options;
   time::steady_clock::TimePoint m_expressInterestTime;
   time::milliseconds m_timeout;
   ResultCode m_resultCode;
+
+  RSA::PrivateKey *privateKey;
 };
 
 } // namespace peek

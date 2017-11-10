@@ -55,7 +55,7 @@ def build(bld):
         name='core-objects',
         features='cxx',
         source=bld.path.ant_glob(['core/*.cpp']) + ['core/version.cpp'],
-        use='NDN_CXX BOOST',
+        use='NDN_CXX BOOST CRYPTOPP',
         includes='.',
         export_includes='.')
 

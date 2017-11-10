@@ -41,6 +41,33 @@ NdnPeek::NdnPeek(Face& face, const PeekOptions& options)
     m_timeout = m_options.interestLifetime < time::milliseconds::zero() ?
                 DEFAULT_INTEREST_LIFETIME : m_options.interestLifetime;
   }
+
+  loadPrivateKey("privateKey.key", *privateKey);
+}
+
+void
+NdnPeek::loadPrivateKey(const std::string &filename, RSA::PrivateKey &key)
+{
+  ByteQueue queue;
+  FileSource file(filename.c_str(), true /*pumpAll*/);
+  file.TransferTo(queue);
+  queue.MessageEnd();
+  key.Load(queue);
+}
+
+std::string
+NdnPeek::decrypt(const std::string &cipher)
+{
+  AutoSeededRandomPool rng;
+  std::string recovered;
+  RSAES_OAEP_SHA_Decryptor d(*privateKey);
+  StringSource ss2(cipher, true,
+    new PK_DecryptorFilter(rng, d,
+      new StringSink(recovered)
+    ) // PK_DecryptorFilter
+  ); // StringSource
+
+  return recovered;
 }
 
 time::milliseconds
@@ -108,7 +135,10 @@ NdnPeek::onData(const Data& data)
 
   if (m_options.wantPayloadOnly) {
     const Block& block = data.getContent();
-    std::cout.write(reinterpret_cast<const char*>(block.value()), block.value_size());
+    std::string info = std::string(reinterpret_cast<const char*>(block.value()), block.value_size());
+    std::string result = decrypt(info);
+    std::cout << result << std::endl;
+    //std::cout.write(reinterpret_cast<const char*>(block.value()), block.value_size());
   }
   else {
     const Block& block = data.wireEncode();

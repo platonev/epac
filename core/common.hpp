@@ -59,9 +59,6 @@
 #include <ndn-cxx/data.hpp>
 #include <ndn-cxx/face.hpp>
 #include <ndn-cxx/interest.hpp>
-#include <ndn-cxx/security/key-chain.hpp>
-#include <ndn-cxx/security/signing-helpers.hpp>
-#include <ndn-cxx/security/signing-info.hpp>
 #include <ndn-cxx/util/backports.hpp>
 #include <ndn-cxx/util/scheduler.hpp>
 #include <ndn-cxx/util/scheduler-scoped-event-id.hpp>

@@ -74,7 +74,6 @@ public:
   decrypt(const std::string &cipher);
 
 private:
-  KeyChain m_keyChain;
   std::string m_programName;
   bool m_isForceDataSet;
   bool m_isUseDigestSha256Set;
@@ -85,7 +84,6 @@ private:
   Name m_prefixName;
   bool m_isDataSent;
   Face m_face;
-
 
   RSA::PrivateKey *privateKey;
   RSA::PublicKey * publicKey;

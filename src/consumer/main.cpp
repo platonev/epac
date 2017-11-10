@@ -26,7 +26,7 @@
  * @author Zhuo Li <zhuoli@email.arizona.edu>
  */
 
-#include "ndnpeek.hpp"
+#include "consumer.hpp"
 #include "core/version.hpp"
 
 #include <ndn-cxx/util/io.hpp>

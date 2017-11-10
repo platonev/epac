@@ -26,7 +26,7 @@
  * @author Zhuo Li <zhuoli@email.arizona.edu>
  */
 
-#include "ndnpeek.hpp"
+#include "consumer.hpp"
 
 namespace ndn {
 namespace peek {

@@ -61,17 +61,17 @@ def build(bld):
 
     bld(features='cxx',
         name='peek-ndnpeek-objects',
-        source=bld.path.ant_glob('src/ndnpeek/*.cpp', excl='src/ndnpeek/main.cpp'),
+        source=bld.path.ant_glob('src/consumer/*.cpp', excl='src/consumer/main.cpp'),
         use='core-objects')
 
     bld(features='cxx cxxprogram',
-        target='bin/ndnpeek',
-        source='src/ndnpeek/main.cpp',
+        target='bin/epacconsumer',
+        source='src/consumer/main.cpp',
         use='peek-ndnpeek-objects')
 
     bld.program(features='cxx',
-        target='bin/ndnpoke',
-        source='src/ndn-poke.cpp',
+        target='bin/epacprovider',
+        source='src/provider/provider.cpp',
         use='core-objects')
 
     bld(name='peek-objects',

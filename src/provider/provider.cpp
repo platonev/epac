@@ -48,7 +48,7 @@
  * @author Jerald Paul Abraham <jeraldabraham@email.arizona.edu>
  */
 
-#include "ndn-poke.hpp"
+#include "provider.hpp"
 
 namespace ndn {
 namespace peek {

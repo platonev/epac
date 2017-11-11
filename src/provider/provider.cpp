@@ -51,7 +51,7 @@
 #include "provider.hpp"
 
 namespace ndn {
-namespace peek {
+namespace epac {
 
 NdnPoke::NdnPoke(char* programName)
   : m_programName(programName)
@@ -319,11 +319,11 @@ main(int argc, char* argv[])
     return 1;
 }
 
-} // namespace peek
+} // namespace epac
 } // namespace ndn
 
 int
 main(int argc, char** argv)
 {
-  return ndn::peek::main(argc, argv);
+  return ndn::epac::main(argc, argv);
 }

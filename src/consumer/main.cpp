@@ -32,7 +32,7 @@
 #include <ndn-cxx/util/io.hpp>
 
 namespace ndn {
-namespace peek {
+namespace epac {
 
 namespace po = boost::program_options;
 
@@ -191,11 +191,11 @@ main(int argc, char* argv[])
   return static_cast<int>(result);
 }
 
-} // namespace peek
+} // namespace epac
 } // namespace ndn
 
 int
 main(int argc, char** argv)
 {
-  return ndn::peek::main(argc, argv);
+  return ndn::epac::main(argc, argv);
 }

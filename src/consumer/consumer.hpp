@@ -26,8 +26,8 @@
  * @author Zhuo Li <zhuoli@email.arizona.edu>
  */
 
-#ifndef NDN_TOOLS_NDNPEEK_NDNPEEK_HPP
-#define NDN_TOOLS_NDNPEEK_NDNPEEK_HPP
+#ifndef NDN_EPAC_CONSUMER_HPP
+#define NDN_EPAC_CONSUMER_HPP
 
 #include "core/common.hpp"
 #include <ndn-cxx/link.hpp>
@@ -40,7 +40,7 @@
 using namespace CryptoPP;
 
 namespace ndn {
-namespace peek {
+namespace epac {
 
 /**
  * @brief options for NdnPeek
@@ -122,7 +122,7 @@ private:
   RSA::PrivateKey *privateKey;
 };
 
-} // namespace peek
+} // namespace epac
 } // namespace ndn
 
-#endif // NDN_TOOLS_NDNPEEK_NDNPEEK_HPP
+#endif // NDN_EPAC_CONSUMER_HPP

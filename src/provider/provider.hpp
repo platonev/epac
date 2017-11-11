@@ -1,5 +1,5 @@
-#ifndef NDN_TOOLS_NDNPEEK_NDNPOKE_HPP
-#define NDN_TOOLS_NDNPEEK_NDNPOKE_HPP
+#ifndef NDN_EPAC_PROVIDER_HPP
+#define NDN_EPAC_PROVIDER_HPP
 
 #include "core/version.hpp"
 
@@ -12,7 +12,7 @@
 
 using namespace CryptoPP;
 namespace ndn {
-namespace peek {
+namespace epac {
 
 class NdnPoke : boost::noncopyable
 {
@@ -88,7 +88,7 @@ private:
   RSA::PrivateKey *privateKey;
   RSA::PublicKey * publicKey;
 };
-} // namespace peek
+} // namespace epac
 } // namespace ndn
 
 #endif

@@ -29,7 +29,7 @@
 #include "consumer.hpp"
 
 namespace ndn {
-namespace peek {
+namespace epac {
 
 NdnPeek::NdnPeek(Face& face, const PeekOptions& options)
   : m_face(face)
@@ -167,5 +167,5 @@ NdnPeek::onNack(const lp::Nack& nack)
   }
 }
 
-} // namespace peek
+} // namespace epac
 } // namespace ndn

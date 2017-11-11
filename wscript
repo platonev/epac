@@ -47,17 +47,17 @@ def build(bld):
     version(bld)
 
     bld(features='subst',
-        source='core/version.cpp.in',
-        target='core/version.cpp',
+        source='src/core/version.cpp.in',
+        target='src/core/version.cpp',
         VERSION_BUILD=VERSION)
 
     bld(target='core-objects',
         name='core-objects',
         features='cxx',
-        source=bld.path.ant_glob(['core/*.cpp']) + ['core/version.cpp'],
+        source=bld.path.ant_glob(['src/core/*.cpp']) + ['src/core/version.cpp'],
         use='NDN_CXX BOOST CRYPTOPP',
-        includes='.',
-        export_includes='.')
+        includes='src',
+        export_includes='src')
 
     bld(features='cxx',
         name='peek-ndnpeek-objects',

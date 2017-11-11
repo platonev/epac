@@ -1,7 +1,8 @@
 # An Encryption and Probability based Access Control Model for Named Data Networking
 
 the goal of **epac** to implement [An Encryption and Probability based Access Control Model for Named Data Networking](http://ieeexplore.ieee.org/abstract/document/7017100/)
-# ndnpeek and ndnpoke
+
+# epacconsumer and epacprovider
 
 **epacconsumer** and **epacprovider** are a pair of programs to request and make available for retrieval of a single Data packet.
 

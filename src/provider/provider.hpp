@@ -11,14 +11,15 @@
 #include <cryptopp/files.h>
 
 using namespace CryptoPP;
+
 namespace ndn {
 namespace epac {
 
-class NdnPoke : boost::noncopyable
+class Provider : boost::noncopyable
 {
 public:
   explicit
-  NdnPoke(char* programName);
+  Provider(char* programName);
 
   void
   usage();

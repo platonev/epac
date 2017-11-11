@@ -1,59 +1,9 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-/**
- * Copyright (c) 2014-2017,  Regents of the University of California,
- *                           Arizona Board of Regents,
- *                           Colorado State University,
- *                           University Pierre & Marie Curie, Sorbonne University,
- *                           Washington University in St. Louis,
- *                           Beijing Institute of Technology,
- *                           The University of Memphis.
- *
- * This file is part of ndn-tools (Named Data Networking Essential Tools).
- * See AUTHORS.md for complete list of ndn-tools authors and contributors.
- *
- * ndn-tools is free software: you can redistribute it and/or modify it under the terms
- * of the GNU General Public License as published by the Free Software Foundation,
- * either version 3 of the License, or (at your option) any later version.
- *
- * ndn-tools is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
- * PURPOSE.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * ndn-tools, e.g., in COPYING.md file.  If not, see <http://www.gnu.org/licenses/>.
- */
-/**
- * Copyright (c) 2014,  Regents of the University of California,
- *                      Arizona Board of Regents,
- *                      Colorado State University,
- *                      University Pierre & Marie Curie, Sorbonne University,
- *                      Washington University in St. Louis,
- *                      Beijing Institute of Technology,
- *                      The University of Memphis
- *
- * This file is part of NFD (Named Data Networking Forwarding Daemon).
- * See AUTHORS.md for complete list of NFD authors and contributors.
- *
- * NFD is free software: you can redistribute it and/or modify it under the terms
- * of the GNU General Public License as published by the Free Software Foundation,
- * either version 3 of the License, or (at your option) any later version.
- *
- * NFD is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
- * PURPOSE.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * NFD, e.g., in COPYING.md file.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @author Jerald Paul Abraham <jeraldabraham@email.arizona.edu>
- */
-
 #include "provider.hpp"
 
 namespace ndn {
 namespace epac {
 
-NdnPoke::NdnPoke(char* programName)
+Provider::Provider(char* programName)
   : m_programName(programName)
   , m_isForceDataSet(false)
   , m_isUseDigestSha256Set(false)
@@ -75,7 +25,7 @@ NdnPoke::NdnPoke(char* programName)
 }
 
 void
-NdnPoke::saveKey(const std::string &filename, const CryptoMaterial &key)
+Provider::saveKey(const std::string &filename, const CryptoMaterial &key)
 {
   ByteQueue queue;
   key.Save(queue);
@@ -86,7 +36,7 @@ NdnPoke::saveKey(const std::string &filename, const CryptoMaterial &key)
 }
 
 std::string
-NdnPoke::encrypt(const std::string &payload)
+Provider::encrypt(const std::string &payload)
 {
   std::string cipher;
   AutoSeededRandomPool rng;
@@ -102,7 +52,7 @@ NdnPoke::encrypt(const std::string &payload)
 }
 
 std::string
-NdnPoke::decrypt(const std::string &cipher)
+Provider::decrypt(const std::string &cipher)
 {
   AutoSeededRandomPool rng;
   std::string recovered;
@@ -118,7 +68,7 @@ NdnPoke::decrypt(const std::string &cipher)
 }
 
 void
-NdnPoke::usage()
+Provider::usage()
 {
   std::cout << "\n Usage:\n " << m_programName << " "
     "[-f] [-D] [-i identity] [-F] [-x freshness] [-w timeout] ndn:/name\n"
@@ -138,31 +88,31 @@ NdnPoke::usage()
 }
 
 void
-NdnPoke::setForceData()
+Provider::setForceData()
 {
   m_isForceDataSet = true;
 }
 
 void
-NdnPoke::setUseDigestSha256()
+Provider::setUseDigestSha256()
 {
   m_isUseDigestSha256Set = true;
 }
 
 void
-NdnPoke::setIdentityName(char* identityName)
+Provider::setIdentityName(char* identityName)
 {
   m_identityName = make_shared<Name>(identityName);
 }
 
 void
-NdnPoke::setLastAsFinalBlockId()
+Provider::setLastAsFinalBlockId()
 {
   m_isLastAsFinalBlockIdSet = true;
 }
 
 void
-NdnPoke::setFreshnessPeriod(int freshnessPeriod)
+Provider::setFreshnessPeriod(int freshnessPeriod)
 {
   if (freshnessPeriod < 0)
     usage();
@@ -171,7 +121,7 @@ NdnPoke::setFreshnessPeriod(int freshnessPeriod)
 }
 
 void
-NdnPoke::setTimeout(int timeout)
+Provider::setTimeout(int timeout)
 {
   if (timeout < 0)
     usage();
@@ -180,19 +130,19 @@ NdnPoke::setTimeout(int timeout)
 }
 
 void
-NdnPoke::setPrefixName(char* prefixName)
+Provider::setPrefixName(char* prefixName)
 {
   m_prefixName = Name(prefixName);
 }
 
 time::milliseconds
-NdnPoke::getDefaultTimeout()
+Provider::getDefaultTimeout()
 {
   return time::seconds(10);
 }
 
 shared_ptr<Data>
-NdnPoke::createDataPacket()
+Provider::createDataPacket()
 {
   auto dataPacket = make_shared<Data>(m_prefixName);
 
@@ -218,7 +168,7 @@ NdnPoke::createDataPacket()
 }
 
 void
-NdnPoke::onInterest(const Name& name,
+Provider::onInterest(const Name& name,
            const Interest& interest,
            shared_ptr<Data> dataPacket)
 {
@@ -228,14 +178,14 @@ NdnPoke::onInterest(const Name& name,
 }
 
 void
-NdnPoke::onRegisterFailed(const Name& prefix, const std::string& reason)
+Provider::onRegisterFailed(const Name& prefix, const std::string& reason)
 {
   std::cerr << "Prefix Registration Failure." << std::endl;
   std::cerr << "Reason = " << reason << std::endl;
 }
 
 void
-NdnPoke::run()
+Provider::run()
 {
   try {
     shared_ptr<Data> dataPacket = createDataPacket();
@@ -245,9 +195,9 @@ NdnPoke::run()
     }
     else {
       m_face.setInterestFilter(m_prefixName,
-                               bind(&NdnPoke::onInterest, this, _1, _2, dataPacket),
+                               bind(&Provider::onInterest, this, _1, _2, dataPacket),
                                RegisterPrefixSuccessCallback(),
-                               bind(&NdnPoke::onRegisterFailed, this, _1, _2));
+                               bind(&Provider::onRegisterFailed, this, _1, _2));
     }
 
     if (m_timeout < time::milliseconds::zero())
@@ -262,7 +212,7 @@ NdnPoke::run()
 }
 
 bool
-NdnPoke::isDataSent() const
+Provider::isDataSent() const
 {
   return m_isDataSent;
 }
@@ -271,7 +221,7 @@ int
 main(int argc, char* argv[])
 {
   int option;
-  NdnPoke program(argv[0]);
+  Provider program(argv[0]);
   while ((option = getopt(argc, argv, "hfDi:Fx:w:V")) != -1) {
     switch (option) {
     case 'h':

@@ -14,7 +14,13 @@ Consumer::Consumer(Face& face, const PeekOptions& options)
                 DEFAULT_INTEREST_LIFETIME : m_options.interestLifetime;
   }
 
-  loadPrivateKey("privateKey.key", *privateKey);
+  AutoSeededRandomPool rng;
+  InvertibleRSAFunction params;
+
+  params.GenerateRandomWithKeySize(rng, 1024);
+
+  privateKey = new RSA::PrivateKey(params);
+  publicKey = new RSA::PublicKey(params);
 }
 
 void

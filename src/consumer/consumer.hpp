@@ -92,6 +92,7 @@ private:
   ResultCode m_resultCode;
 
   RSA::PrivateKey *privateKey;
+  RSA::PublicKey *publicKey;
 };
 
 } // namespace epac

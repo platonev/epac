@@ -3,6 +3,7 @@
 
 #include "core/version.hpp"
 #include "core/common.hpp"
+#include "active-user-table.hpp"
 
 using namespace CryptoPP;
 
@@ -68,6 +69,9 @@ public:
   std::string
   decrypt(const std::string &cipher);
 
+  void
+  doRegister(std::string uid, RSA::PublicKey &pubKey);
+
 private:
   std::string m_programName;
   bool m_isForceDataSet;
@@ -79,6 +83,8 @@ private:
   Name m_prefixName;
   bool m_isDataSent;
   Face m_face;
+
+  ActiveUserTable aut;
 
   RSA::PrivateKey *privateKey;
   RSA::PublicKey * publicKey;

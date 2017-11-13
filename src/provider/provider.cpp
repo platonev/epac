@@ -68,6 +68,12 @@ Provider::decrypt(const std::string &cipher)
 }
 
 void
+Provider::doRegister(std::string uid, RSA::PublicKey &pubKey)
+{
+  aut.add(uid, pubKey);
+}
+
+void
 Provider::usage()
 {
   std::cout << "\n Usage:\n " << m_programName << " "

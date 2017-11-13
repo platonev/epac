@@ -1,8 +1,6 @@
 #include "consumer.hpp"
 #include "core/version.hpp"
 
-#include <ndn-cxx/util/io.hpp>
-
 namespace ndn {
 namespace epac {
 

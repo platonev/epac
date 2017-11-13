@@ -2,13 +2,7 @@
 #define NDN_EPAC_PROVIDER_HPP
 
 #include "core/version.hpp"
-
-#include <sstream>
-
-#include <cryptopp/osrng.h>
-#include <cryptopp/rsa.h>
-#include <cryptopp/filters.h>
-#include <cryptopp/files.h>
+#include "core/common.hpp"
 
 using namespace CryptoPP;
 

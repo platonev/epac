@@ -2,12 +2,6 @@
 #define NDN_EPAC_CONSUMER_HPP
 
 #include "core/common.hpp"
-#include <ndn-cxx/link.hpp>
-
-#include <cryptopp/osrng.h>
-#include <cryptopp/rsa.h>
-#include <cryptopp/filters.h>
-#include <cryptopp/files.h>
 
 using namespace CryptoPP;
 

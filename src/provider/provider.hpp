@@ -89,6 +89,8 @@ private:
   RSA::PrivateKey *privateKey;
   RSA::PublicKey * publicKey;
 };
+
+int main(int argc, char** argv);
 } // namespace epac
 } // namespace ndn
 

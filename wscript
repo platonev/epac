@@ -71,7 +71,7 @@ def build(bld):
 
     bld.program(features='cxx',
         target='bin/epacprovider',
-        source='src/provider/provider.cpp',
+        source='src/provider/provider.cpp src/provider/active-user-table.cpp src/provider/main.cpp',
         use='core-objects')
 
     bld(name='peek-objects',

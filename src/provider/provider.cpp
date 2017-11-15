@@ -180,7 +180,7 @@ Provider::onInterest(const Name& name,
 {
   m_face.put(*dataPacket);
   m_isDataSent = true;
-  m_face.shutdown();
+  // m_face.shutdown();
 }
 
 void
@@ -277,9 +277,3 @@ main(int argc, char* argv[])
 
 } // namespace epac
 } // namespace ndn
-
-int
-main(int argc, char** argv)
-{
-  return ndn::epac::main(argc, argv);
-}
